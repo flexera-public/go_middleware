@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 
@@ -94,11 +95,7 @@ func (t *tLogger) Printf(f string, v ...interface{}) {
 // Create dummy echo.Context with request for tests
 // Note: echo makes it impossible to initialize the context response :(
 func dummyContext() *echo.Context {
-	req, err := http.NewRequest("POST", "http://example.com", strings.NewReader("foo"))
-	if err != nil {
-		panic("Doh! " + err.Error())
-	}
-	ctx := echo.Context{Request: req}
-
-	return &ctx
+	req, _ := http.NewRequest("POST", "http://example.com", strings.NewReader("foo"))
+	resp := &echo.Response{Writer: httptest.NewRecorder()}
+	return echo.NewContext(req, resp, echo.New())
 }
