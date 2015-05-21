@@ -18,7 +18,7 @@ type Logger interface {
 // Note: this middleware leverages echo's context to retrieve the response status and size
 func HttpLogger(logger Logger) echo.Middleware {
 	return func(h echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) *echo.HTTPError {
+		return func(c *echo.Context) error {
 			msg := fmt.Sprintf(`Processing GET "%s"`, c.Request.URL.String())
 			originIp := c.Request.Header.Get("X-Forwarded-For")
 			if originIp == "" {
@@ -38,7 +38,7 @@ func HttpLogger(logger Logger) echo.Middleware {
 			}
 			elapsed := time.Since(start)
 			var status string
-			var size int
+			var size int64
 			if resp := c.Response; resp != nil {
 				status = http.StatusText(resp.Status())
 				size = resp.Size()

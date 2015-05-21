@@ -10,7 +10,7 @@ const HeaderKey = "X-Request-Id"
 
 // RequestID middleware
 func RequestID(h echo.HandlerFunc) echo.HandlerFunc {
-	return func(c *echo.Context) *echo.HTTPError {
+	return func(c *echo.Context) error {
 		id := c.Request.Header.Get(HeaderKey)
 		if id == "" {
 			id = uuid.NewUUID().String()
