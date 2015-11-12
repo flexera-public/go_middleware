@@ -33,7 +33,7 @@ var _ = Describe("HttpLogger", func() {
 			var called bool
 
 			BeforeEach(func() {
-				handler = func(c *echo.Context) *echo.HTTPError {
+				handler = func(c *echo.Context) error {
 					called = true
 					return nil
 				}
@@ -61,7 +61,7 @@ var _ = Describe("HttpLogger", func() {
 					h := m.(func(echo.HandlerFunc) echo.HandlerFunc)(handler)
 					Ω(h).ShouldNot(BeNil())
 					ctx := dummyContext()
-					ctx.Response.Write([]byte("13 characters"))
+					ctx.Response().Write([]byte("13 characters"))
 					h(ctx)
 					Ω(called).Should(BeTrue())
 					Ω(out).Should(HaveLen(2))
@@ -99,6 +99,6 @@ func (t *tLogger) Printf(f string, v ...interface{}) {
 // Note: echo makes it impossible to initialize the context response :(
 func dummyContext() *echo.Context {
 	req, _ := http.NewRequest("POST", "http://example.com", strings.NewReader("foo"))
-	resp := &echo.Response{Writer: httptest.NewRecorder()}
-	return echo.NewContext(req, resp, echo.New())
+	rec := httptest.NewRecorder()
+	return echo.NewContext(req, echo.NewResponse(rec), echo.New())
 }

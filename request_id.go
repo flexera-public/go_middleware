@@ -11,7 +11,7 @@ const HeaderKey = "X-Request-Id"
 // RequestID middleware
 func RequestID(h echo.HandlerFunc) echo.HandlerFunc {
 	return func(c *echo.Context) error {
-		id := c.Request.Header.Get(HeaderKey)
+		id := c.Request().Header.Get(HeaderKey)
 		if id == "" {
 			id = uuid.NewUUID().String()
 		}
@@ -20,7 +20,7 @@ func RequestID(h echo.HandlerFunc) echo.HandlerFunc {
 
 		// Set header before handling error so that the 500 response contains it
 		// (be kind to prod support...)
-		c.Response.Header().Set(HeaderKey, id)
+		c.Response().Header().Set(HeaderKey, id)
 
 		return err
 	}
