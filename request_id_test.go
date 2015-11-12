@@ -13,7 +13,7 @@ var _ = Describe("RequestID", func() {
 		var called bool
 
 		BeforeEach(func() {
-			handler = func(c *echo.Context) *echo.HTTPError {
+			handler = func(c *echo.Context) error {
 				called = true
 				return nil
 			}
@@ -37,7 +37,7 @@ var _ = Describe("RequestID", func() {
 			ctx := dummyContext()
 			h(ctx)
 			Ω(called).Should(BeTrue())
-			header := ctx.Response.Header().Get("X-Request-ID")
+			header := ctx.Response().Header().Get("X-Request-ID")
 			Ω(header).ShouldNot(BeEmpty())
 		})
 
@@ -45,10 +45,10 @@ var _ = Describe("RequestID", func() {
 			h := middleware.RequestID(handler)
 			Ω(h).ShouldNot(BeNil())
 			ctx := dummyContext()
-			ctx.Request.Header.Set("X-Request-Id", "foo")
+			ctx.Request().Header.Set("X-Request-Id", "foo")
 			h(ctx)
 			Ω(called).Should(BeTrue())
-			header := ctx.Response.Header().Get("X-Request-ID")
+			header := ctx.Response().Header().Get("X-Request-ID")
 			Ω(header).Should(Equal("foo"))
 		})
 	})
